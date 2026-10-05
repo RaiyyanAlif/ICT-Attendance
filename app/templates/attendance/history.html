@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Attendance History | {{ course.course_code }}
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+
+        .page {
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 35px 20px 50px;
+        }
+
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+
+        .back-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+
+        .header {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            margin-bottom: 22px;
+        }
+
+
+        .course-code {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+
+        .subtitle {
+            margin: 0;
+            color: #6b7280;
+        }
+
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 22px;
+        }
+
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+
+        .info-label {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+
+        .info-value {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+
+        .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 9px;
+            padding: 9px 13px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+
+        .btn-edit {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        .btn-edit:hover {
+            background: #1d4ed8;
+        }
+
+
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+        }
+
+
+        .btn-delete:hover {
+            background: #b91c1c;
+        }
+
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            margin-bottom: 22px;
+        }
+
+
+        .card-title {
+            margin: 0 0 20px;
+            font-size: 21px;
+        }
+
+
+        .matrix-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+
+        .matrix {
+            border-collapse: collapse;
+            min-width: 900px;
+            width: 100%;
+        }
+
+
+        .matrix th,
+        .matrix td {
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+
+        .matrix th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 13px;
+        }
+
+
+        .matrix td {
+            font-size: 13px;
+        }
+
+
+        .student-column {
+            text-align: left !important;
+            min-width: 150px;
+        }
+
+
+        .name-column {
+            text-align: left !important;
+            min-width: 210px;
+        }
+
+
+        .student-id {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+
+        .date-header {
+            min-width: 95px;
+        }
+
+
+        .date-text {
+            font-weight: 700;
+        }
+
+
+        .weight-text {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+
+        .present {
+            color: #15803d;
+            background: #f0fdf4;
+            font-weight: 800;
+        }
+
+
+        .absent {
+            color: #b91c1c;
+            background: #fef2f2;
+            font-weight: 800;
+        }
+
+
+        .no-record {
+            color: #94a3b8;
+            background: #f8fafc;
+        }
+
+
+        .status {
+            font-size: 14px;
+        }
+
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+
+        .summary-table th,
+        .summary-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+
+        .summary-table th {
+            background: #f8fafc;
+            font-size: 13px;
+            color: #475569;
+        }
+
+
+        .present-count {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+
+        .absent-count {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+
+        .summary-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+
+        .legend {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+
+        .legend-present {
+            background: #f0fdf4;
+        }
+
+
+        .legend-absent {
+            background: #fef2f2;
+        }
+
+
+        .legend-none {
+            background: #f8fafc;
+        }
+
+
+        .empty {
+            text-align: center;
+            padding: 45px 15px;
+            color: #6b7280;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <!-- =================================================
+         TOP
+         ================================================= -->
+
+    <div class="topbar">
+
+        <a
+            href="{{ url_for(
+                'courses.course_details',
+                course_id=course.id
+            ) }}"
+            class="back-link"
+        >
+            ← Back to Course
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         HEADER
+         ================================================= -->
+
+    <div class="header">
+
+        <span class="course-code">
+            {{ course.course_code }}
+        </span>
+
+
+        <h1>
+            {{ course.course_name }}
+        </h1>
+
+
+        <p class="subtitle">
+            Date-wise Attendance History
+        </p>
+
+
+        <div class="info-grid">
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Batch
+                </span>
+
+                <span class="info-value">
+                    {{ course.batch.name if course.batch else "N/A" }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Total Classes
+                </span>
+
+                <span class="info-value">
+                    {{ sessions|length }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Students
+                </span>
+
+                <span class="info-value">
+                    {{ students|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a
+                href="{{ url_for(
+                    'attendance.take_attendance',
+                    course_id=course.id
+                ) }}"
+                class="btn btn-primary"
+            >
+                + Take Attendance
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'reports.course_report',
+                    course_id=course.id
+                ) }}"
+                class="btn btn-secondary"
+            >
+                Attendance Report
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% if sessions %}
+
+
+        <!-- =================================================
+             DATE-WISE MATRIX
+             ================================================= -->
+
+        <div class="card">
+
+            <h2 class="card-title">
+                Student Attendance by Date
+            </h2>
+
+
+            <div class="legend">
+
+                <div class="legend-item">
+
+                    <span class="legend-box legend-present"></span>
+
+                    Present
+
+                </div>
+
+
+                <div class="legend-item">
+
+                    <span class="legend-box legend-absent"></span>
+
+                    Absent
+
+                </div>
+
+
+                <div class="legend-item">
+
+                    <span class="legend-box legend-none"></span>
+
+                    No Record
+
+                </div>
+
+            </div>
+
+
+            <div class="matrix-wrapper">
+
+                <table class="matrix">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="student-column">
+                                Student ID
+                            </th>
+
+                            <th class="name-column">
+                                Student Name
+                            </th>
+
+
+                            {% for session in sessions %}
+
+                                <th class="date-header">
+
+                                    <span class="date-text">
+
+                                        {{ session.date.strftime("%d %b %Y") }}
+
+                                    </span>
+
+
+                                    <span class="weight-text">
+
+                                        Weight:
+                                        {{ session.attendance_weight }}
+
+                                    </span>
+
+                                </th>
+
+                            {% endfor %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                            <tr>
+
+                                <td class="student-column">
+
+                                    <span class="student-id">
+
+                                        {{ student.student_id }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td class="name-column">
+
+                                    {{ student.name }}
+
+                                </td>
+
+
+                                {% for session in sessions %}
+
+                                    {% set record =
+                                        attendance_map[student.id].get(session.id)
+                                    %}
+
+
+                                    {% if record %}
+
+                                        {% if record.present %}
+
+                                            <td class="present">
+
+                                                <span class="status">
+                                                    P
+                                                </span>
+
+                                            </td>
+
+                                        {% else %}
+
+                                            <td class="absent">
+
+                                                <span class="status">
+                                                    A
+                                                </span>
+
+                                            </td>
+
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        <td class="no-record">
+                                            —
+                                        </td>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CLASS SUMMARY
+             ================================================= -->
+
+        <div class="card">
+
+            <h2 class="card-title">
+                Class-wise Summary
+            </h2>
+
+
+            <div class="matrix-wrapper">
+
+                <table class="summary-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Weight
+                            </th>
+
+                            <th>
+                                Present
+                            </th>
+
+                            <th>
+                                Absent
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in session_stats %}
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+
+                                <td>
+                                    {{ item.session.date.strftime("%d %B %Y") }}
+                                </td>
+
+
+                                <td>
+                                    {{ item.session.attendance_weight }}
+                                </td>
+
+
+                                <td class="present-count">
+                                    {{ item.present }}
+                                </td>
+
+
+                                <td class="absent-count">
+                                    {{ item.absent }}
+                                </td>
+
+
+                                <td>
+                                    {{ item.total }}
+                                </td>
+
+
+                                <td>
+
+                                    <div class="summary-actions">
+
+                                        <!-- EDIT -->
+
+                                        <a
+                                            href="{{ url_for(
+                                                'attendance.edit_attendance',
+                                                session_id=item.session.id
+                                            ) }}"
+                                            class="btn btn-edit"
+                                        >
+                                            Edit
+                                        </a>
+
+
+                                        <!-- DELETE -->
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'attendance.delete_attendance',
+                                                session_id=item.session.id
+                                            ) }}"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-delete"
+                                                onclick="return confirm(
+                                                    'Delete attendance for {{ item.session.date.strftime("%d %B %Y") }}? This will remove all attendance records for this date.'
+                                                );"
+                                            >
+                                                Delete
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="card">
+
+            <div class="empty">
+
+                <h2>
+                    No Attendance Records Yet
+                </h2>
+
+
+                <p>
+                    No attendance has been taken for this course.
+                </p>
+
+
+                <a
+                    href="{{ url_for(
+                        'attendance.take_attendance',
+                        course_id=course.id
+                    ) }}"
+                    class="btn btn-primary"
+                >
+                    Take First Attendance
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+</body>
+
+</html>

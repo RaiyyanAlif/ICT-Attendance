@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Courses | ICT Attendance</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 35px 20px 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(300px, 1fr)
+            );
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 23px;
+            box-shadow: 0 8px 25px rgba(0,0,0,.07);
+        }
+
+        .code {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        h2 {
+            margin: 14px 0 8px;
+            font-size: 20px;
+        }
+
+        .batch {
+            color: #2563eb;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .session {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .student-count {
+            margin-top: 15px;
+            padding: 11px;
+            background: #f8fafc;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 13px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .open {
+            background: #2563eb;
+            color: white;
+        }
+
+        .edit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 18px;
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        @media (max-width: 650px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <div class="topbar">
+
+        <a
+            href="{{ url_for('dashboard.dashboard') }}"
+            class="back"
+        >
+            ← Dashboard
+        </a>
+
+
+        <a
+            href="{{ url_for('courses.add_course') }}"
+            class="add-btn"
+        >
+            + Add Course
+        </a>
+
+    </div>
+
+
+    <h1>
+        Courses
+    </h1>
+
+
+    <p class="subtitle">
+        Manage your course offerings, batches and attendance.
+    </p>
+
+
+    {% if courses %}
+
+        <div class="grid">
+
+
+            {% for course in courses %}
+
+                <div class="card">
+
+
+                    <span class="code">
+                        {{ course.course_code }}
+                    </span>
+
+
+                    <h2>
+                        {{ course.course_name }}
+                    </h2>
+
+
+                    <div class="batch">
+
+                        Batch:
+                        {{ course.batch.name
+                           if course.batch
+                           else "Not assigned" }}
+
+                    </div>
+
+
+                    <div class="session">
+
+                        Academic Session:
+                        {{ course.academic_session
+                           or (
+                               course.batch.academic_session
+                               if course.batch
+                               else "Not assigned"
+                           ) }}
+
+                    </div>
+
+
+                    <div class="student-count">
+
+                        {{ course.enrollments|length }}
+                        enrolled student{{ "" if course.enrollments|length == 1 else "s" }}
+
+                    </div>
+
+
+                    <div class="actions">
+
+
+                        <a
+                            href="{{ url_for(
+                                'courses.course_details',
+                                course_id=course.id
+                            ) }}"
+                            class="btn open"
+                        >
+                            Open Course
+                        </a>
+
+
+                        <a
+                            href="{{ url_for(
+                                'courses.edit_course',
+                                course_id=course.id
+                            ) }}"
+                            class="btn edit"
+                        >
+                            Edit
+                        </a>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'courses.delete_course',
+                                course_id=course.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="btn delete"
+                                onclick="return confirm(
+                                    'Delete this course? All attendance records for this course will also be deleted.'
+                                );"
+                            >
+                                Delete
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    {% else %}
+
+
+        <div class="empty">
+
+            <h2>
+                No Courses Yet
+            </h2>
+
+            <p>
+                Create your first course to get started.
+            </p>
+
+            <a
+                href="{{ url_for('courses.add_course') }}"
+                class="add-btn"
+            >
+                + Add Course
+            </a>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+</body>
+
+</html>

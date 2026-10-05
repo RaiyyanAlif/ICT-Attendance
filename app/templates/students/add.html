@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student | ICT Attendance</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+        }
+
+        .subtitle {
+            margin: 0 0 25px;
+            color: #6b7280;
+        }
+
+        .context-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 13px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+
+        .context-box .label {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .context-box .value {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .context-box .small {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .help {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 10px;
+            padding: 13px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .new-student-note {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+
+        <h1>
+            Add Student
+        </h1>
+
+        {% if course %}
+            <a
+                href="{{ url_for(
+                    'courses.course_details',
+                    course_id=course.id
+                ) }}"
+                class="back-link"
+            >
+                ← Back to Course
+            </a>
+        {% elif batch %}
+            <a
+                href="{{ url_for(
+                    'batches.batch_students',
+                    batch_id=batch.id
+                ) }}"
+                class="back-link"
+            >
+                ← Back to Batch
+            </a>
+        {% else %}
+            <a
+                href="{{ url_for('batches.list_batches') }}"
+                class="back-link"
+            >
+                ← Back to Batches
+            </a>
+        {% endif %}
+
+    </div>
+
+
+    <div class="card">
+
+        {% if course %}
+
+            <p class="subtitle">
+                Add a student to this course.
+            </p>
+
+            <div class="context-box">
+
+                <div class="label">
+                    Course
+                </div>
+
+                <div class="value">
+                    {{ course.course_code }}
+                    — {{ course.course_name }}
+                </div>
+
+                <div class="small">
+                    Batch:
+                    <strong>{{ course.batch.name }}</strong>
+
+                    {% if course.academic_session %}
+                        · Session:
+                        <strong>{{ course.academic_session }}</strong>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        {% elif batch %}
+
+            <p class="subtitle">
+                Add a new student to the batch master database.
+            </p>
+
+            <div class="context-box">
+
+                <div class="label">
+                    Batch
+                </div>
+
+                <div class="value">
+                    {{ batch.name }}
+                </div>
+
+                {% if batch.department %}
+
+                    <div class="small">
+                        Department:
+                        <strong>{{ batch.department }}</strong>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% else %}
+
+            <p class="subtitle">
+                Add a student to the master student database.
+            </p>
+
+        {% endif %}
+
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            <!-- STUDENT ID -->
+            <div class="form-group">
+
+                <label for="student_id">
+                    Student ID <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="student_id"
+                    name="student_id"
+                    placeholder="Example: IT24010"
+                    value="{{ request.form.get('student_id', '') }}"
+                    required
+                    autocomplete="off"
+                >
+
+                <div class="help">
+                    Example: IT24010
+                </div>
+
+            </div>
+
+
+            <!-- NAME -->
+            <div class="form-group">
+
+                <label for="name">
+                    Full Name <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Student full name"
+                    value="{{ request.form.get('name', '') }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="form-group">
+
+                <label for="email">
+                    University Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="studentid@mbstu.ac.bd"
+                    value="{{ request.form.get('email', '') }}"
+                >
+
+                <div class="help">
+                    Leave blank to automatically use:
+                    <strong>studentid@mbstu.ac.bd</strong>
+                </div>
+
+            </div>
+
+
+            <!-- HIDDEN BATCH -->
+            {% if batch %}
+
+                <input
+                    type="hidden"
+                    name="batch_id"
+                    value="{{ batch.id }}"
+                >
+
+            {% endif %}
+
+
+            <div class="new-student-note">
+
+                {% if course %}
+
+                    <strong>Important:</strong>
+                    This student will automatically belong to
+                    <strong>{{ course.batch.name }}</strong>.
+                    You cannot select another batch from this page.
+
+                {% elif batch %}
+
+                    <strong>Batch:</strong>
+                    This student will be added to
+                    <strong>{{ batch.name }}</strong>.
+
+                {% else %}
+
+                    A batch must be selected before a student can be added.
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Add Student
+                </button>
+
+
+                {% if course %}
+
+                    <a
+                        href="{{ url_for(
+                            'courses.course_details',
+                            course_id=course.id
+                        ) }}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                {% elif batch %}
+
+                    <a
+                        href="{{ url_for(
+                            'batches.batch_students',
+                            batch_id=batch.id
+                        ) }}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{{ url_for('batches.list_batches') }}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

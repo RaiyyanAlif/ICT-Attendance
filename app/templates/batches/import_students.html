@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Import Students - ICT Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .batch-info {
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search {
+            flex: 1;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .count {
+            color: #6b7280;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .student-table th,
+        .student-table td {
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .student-table th {
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .student-id {
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6b7280;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .primary:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 700px) {
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .student-table {
+                min-width: 650px;
+            }
+
+            .card {
+                overflow-x: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <a
+        class="back"
+        href="{{ url_for(
+            'batches.batch_students',
+            batch_id=batch.id
+        ) }}"
+    >
+        ← Back to {{ batch.name }}
+    </a>
+
+    <div class="card">
+
+        <h1>
+            Import Existing Students
+        </h1>
+
+        <div class="subtitle">
+            Select students from the existing ICT Attendance
+            student database and assign them to this batch.
+        </div>
+
+        <div class="batch-info">
+
+            <strong>Target Batch:</strong>
+            {{ batch.name }}
+
+            <br>
+
+            <strong>Academic Session:</strong>
+            {{ batch.academic_session or "Not Set" }}
+
+            <br>
+
+            <strong>Department:</strong>
+            {{ batch.department or "Not Set" }}
+
+        </div>
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+        {% if students %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'batches.import_students',
+                batch_id=batch.id
+            ) }}"
+        >
+
+            <div class="toolbar">
+
+                <input
+                    type="text"
+                    id="studentSearch"
+                    class="search"
+                    placeholder="Search Student ID or name..."
+                >
+
+                <div class="count">
+                    {{ students|length }}
+                    available students
+                </div>
+
+            </div>
+
+
+            <table class="student-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            <input
+                                type="checkbox"
+                                id="selectAll"
+                            >
+                        </th>
+
+                        <th>
+                            Student ID
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTableBody">
+
+                {% for student in students %}
+
+                    <tr class="student-row">
+
+                        <td>
+
+                            <input
+                                type="checkbox"
+                                name="student_ids"
+                                value="{{ student.id }}"
+                                class="student-checkbox"
+                            >
+
+                        </td>
+
+                        <td class="student-id">
+                            {{ student.student_id }}
+                        </td>
+
+                        <td>
+                            {{ student.name }}
+                        </td>
+
+                        <td>
+                            {{ student.email }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+            <div class="actions">
+
+                <a
+                    class="btn secondary"
+                    href="{{ url_for(
+                        'batches.batch_students',
+                        batch_id=batch.id
+                    ) }}"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn primary"
+                >
+                    Import Selected Students
+                </button>
+
+            </div>
+
+        </form>
+
+        {% else %}
+
+        <div class="empty">
+
+            <h2>
+                No unassigned students
+            </h2>
+
+            <p>
+                There are currently no students in the
+                master database waiting to be assigned to
+                a batch.
+            </p>
+
+            <p>
+                Use <strong>Add Student</strong> to create
+                a new student, or add the student to the
+                master database first.
+            </p>
+
+            <a
+                class="btn primary"
+                href="{{ url_for(
+                    'students.add_student',
+                    batch_id=batch.id
+                ) }}"
+            >
+                + Add Student
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const searchInput =
+        document.getElementById("studentSearch");
+
+    const selectAll =
+        document.getElementById("selectAll");
+
+    const rows =
+        document.querySelectorAll(".student-row");
+
+    const checkboxes =
+        document.querySelectorAll(".student-checkbox");
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                const query =
+                    this.value
+                    .toLowerCase()
+                    .trim();
+
+                rows.forEach(
+                    function (row) {
+
+                        const text =
+                            row.innerText
+                            .toLowerCase();
+
+                        row.style.display =
+                            text.includes(query)
+                            ? ""
+                            : "none";
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    if (selectAll) {
+
+        selectAll.addEventListener(
+            "change",
+            function () {
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+                        checkbox.checked =
+                            selectAll.checked;
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+</script>
+
+</body>
+
+</html>

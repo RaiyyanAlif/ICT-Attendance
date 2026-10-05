@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard - ICT Attendance</title>
+</head>
+
+<body>
+
+    <h1>ICT Attendance</h1>
+
+    <h2>
+        Welcome, {{ teacher.name }} 👋
+    </h2>
+
+    <p>
+        <strong>Email:</strong> {{ teacher.email }}
+    </p>
+
+    <hr>
+
+    <h2>Teacher Dashboard</h2>
+
+    <ul>
+        <li>
+            <a href="{{ url_for('courses.list_courses') }}">
+                📚 Courses
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('students.list_students') }}">
+                👨‍🎓 Students
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('batches.list_batches') }}">
+                🏫 Batches
+            </a>
+        </li>
+    </ul>
+
+    <hr>
+
+    <p>
+        <strong>Attendance and Reports</strong>
+    </p>
+
+    <p>
+        Open a course to take attendance, view attendance history,
+        and generate reports.
+    </p>
+
+    <hr>
+
+    <a href="{{ url_for('auth.logout') }}">
+        Logout
+    </a>
+
+</body>
+</html>

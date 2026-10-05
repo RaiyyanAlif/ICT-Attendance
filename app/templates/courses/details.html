@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ course.course_code }} | ICT Attendance
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+
+        .page {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+
+        /* =================================================
+           TOP BAR
+           ================================================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+
+        .back {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+
+        .top-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 9px;
+            text-decoration: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+
+        .btn-edit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+
+        .btn-edit:hover {
+            background: #c7d2fe;
+        }
+
+
+        .btn-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+
+        .btn-green:hover {
+            background: #bbf7d0;
+        }
+
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+
+        /* =================================================
+           COURSE HEADER
+           ================================================= */
+
+        .course-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .07);
+            margin-bottom: 25px;
+        }
+
+
+        .course-code {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .3px;
+        }
+
+
+        .course-header h1 {
+            margin: 15px 0 10px;
+            font-size: 30px;
+        }
+
+
+        .course-description {
+            color: #6b7280;
+            margin: 0 0 22px;
+        }
+
+
+        .course-meta {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+        }
+
+
+        .meta-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+
+        .meta-label {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+
+
+        .meta-value {
+            font-weight: 800;
+            color: #111827;
+        }
+
+
+        /* =================================================
+           QUICK ACTIONS
+           ================================================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-decoration: none;
+            color: #1f2937;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .06);
+            border: 1px solid #eef2f7;
+            transition: .15s ease;
+        }
+
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .09);
+        }
+
+
+        .action-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+
+        .action-title {
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+
+        .action-text {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+
+        /* =================================================
+           MAIN GRID
+           ================================================= */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.6fr)
+                minmax(320px, .9fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .06);
+            margin-bottom: 22px;
+        }
+
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+
+        .card-header p {
+            margin: 5px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        /* =================================================
+           STUDENT TABLE
+           ================================================= */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+
+        th {
+            text-align: left;
+            background: #f8fafc;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 14px;
+        }
+
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .student-id {
+            font-weight: 800;
+            color: #2563eb;
+            white-space: nowrap;
+        }
+
+
+        .student-name {
+            font-weight: 700;
+        }
+
+
+        .student-email {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        .remove-form {
+            margin: 0;
+        }
+
+
+        .remove-btn {
+            border: none;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 7px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        .remove-btn:hover {
+            background: #fecaca;
+        }
+
+
+        /* =================================================
+           IMPORT STUDENTS
+           ================================================= */
+
+        .import-info {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+
+        .import-info strong {
+            color: #1e3a8a;
+        }
+
+
+        .available-list {
+            max-height: 330px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+
+        .available-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+
+        .available-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .available-row input {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
+
+
+        .available-details {
+            min-width: 0;
+        }
+
+
+        .available-id {
+            font-weight: 800;
+            color: #2563eb;
+            font-size: 13px;
+        }
+
+
+        .available-name {
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+
+        .available-email {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+
+        .import-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+
+        /* =================================================
+           EMPTY STATE
+           ================================================= */
+
+        .empty {
+            text-align: center;
+            padding: 35px 15px;
+            color: #6b7280;
+        }
+
+
+        .empty-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+
+        .empty h3 {
+            margin: 0 0 7px;
+            color: #374151;
+        }
+
+
+        /* =================================================
+           DELETE COURSE
+           ================================================= */
+
+        .danger-zone {
+            border: 1px solid #fecaca;
+            background: #fffafa;
+        }
+
+
+        .danger-zone h2 {
+            color: #991b1b;
+        }
+
+
+        .danger-zone p {
+            color: #7f1d1d;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+           ================================================= */
+
+        @media (max-width: 850px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            .course-header {
+                padding: 22px;
+            }
+
+
+            .course-header h1 {
+                font-size: 24px;
+            }
+
+
+            .card {
+                padding: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =================================================
+         TOP BAR
+         ================================================= -->
+
+    <div class="topbar">
+
+
+        <a
+            href="{{ url_for('courses.list_courses') }}"
+            class="back"
+        >
+            ← Back to Courses
+        </a>
+
+
+        <div class="top-actions">
+
+
+            <a
+                href="{{ url_for(
+                    'courses.edit_course',
+                    course_id=course.id
+                ) }}"
+                class="btn btn-edit"
+            >
+                ✏ Edit Course
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'attendance.take_attendance',
+                    course_id=course.id
+                ) }}"
+                class="btn btn-primary"
+            >
+                Take Attendance
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         COURSE HEADER
+         ================================================= -->
+
+    <section class="course-header">
+
+
+        <span class="course-code">
+            {{ course.course_code }}
+        </span>
+
+
+        <h1>
+            {{ course.course_name }}
+        </h1>
+
+
+        <p class="course-description">
+
+            Course management, student enrollment,
+            attendance and reports.
+
+        </p>
+
+
+        <div class="course-meta">
+
+
+            <div class="meta-box">
+
+                <span class="meta-label">
+                    Batch
+                </span>
+
+                <span class="meta-value">
+
+                    {% if course.batch %}
+
+                        {{ course.batch.name }}
+
+                    {% else %}
+
+                        Not assigned
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
+            <div class="meta-box">
+
+                <span class="meta-label">
+                    Academic Session
+                </span>
+
+                <span class="meta-value">
+
+                    {% if course.batch and course.batch.academic_session %}
+
+                        {{ course.batch.academic_session }}
+
+                    {% elif course.academic_session %}
+
+                        {{ course.academic_session }}
+
+                    {% else %}
+
+                        Not assigned
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
+            <div class="meta-box">
+
+                <span class="meta-label">
+                    Enrolled Students
+                </span>
+
+                <span class="meta-value">
+
+                    {{ enrolled_students|length }}
+
+                </span>
+
+            </div>
+
+
+            <div class="meta-box">
+
+                <span class="meta-label">
+                    Attendance Sessions
+                </span>
+
+                <span class="meta-value">
+
+                    {{ attendance_count }}
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         QUICK ACTIONS
+         ================================================= -->
+
+    <div class="quick-actions">
+
+
+        <a
+            href="{{ url_for(
+                'attendance.take_attendance',
+                course_id=course.id
+            ) }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📝
+            </div>
+
+            <div class="action-title">
+                Take Attendance
+            </div>
+
+            <div class="action-text">
+                Record today's attendance for this course.
+            </div>
+
+        </a>
+
+
+
+        <a
+            href="{{ url_for(
+                'attendance.attendance_history',
+                course_id=course.id
+            ) }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📅
+            </div>
+
+            <div class="action-title">
+                Attendance History
+            </div>
+
+            <div class="action-text">
+                View attendance records by date.
+            </div>
+
+        </a>
+
+
+
+        <a
+            href="{{ url_for(
+                'reports.course_report',
+                course_id=course.id
+            ) }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📊
+            </div>
+
+            <div class="action-title">
+                Attendance Report
+            </div>
+
+            <div class="action-text">
+                View weighted attendance percentages.
+            </div>
+
+        </a>
+
+
+
+        <a
+            href="{{ url_for(
+                'reports.download_excel',
+                course_id=course.id
+            ) }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📥
+            </div>
+
+            <div class="action-title">
+                Download Excel
+            </div>
+
+            <div class="action-text">
+                Export the attendance report as Excel.
+            </div>
+
+        </a>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         MAIN CONTENT
+         ================================================= -->
+
+    <div class="main-grid">
+
+
+        <!-- =================================================
+             LEFT COLUMN
+             ================================================= -->
+
+        <div>
+
+
+            <!-- =============================================
+                 ENROLLED STUDENTS
+                 ============================================= -->
+
+            <div class="card">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Enrolled Students
+                        </h2>
+
+                        <p>
+                            Students currently enrolled in this course.
+                        </p>
+
+                    </div>
+
+
+                    <span class="btn btn-secondary">
+
+                        {{ enrolled_students|length }}
+                        student{{ "" if enrolled_students|length == 1 else "s" }}
+
+                    </span>
+
+                </div>
+
+
+
+                {% if enrolled_students %}
+
+
+                    <div class="table-wrap">
+
+
+                        <table>
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Student ID
+                                    </th>
+
+                                    <th>
+                                        Name
+                                    </th>
+
+                                    <th>
+                                        Email
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+
+                                {% for student in enrolled_students %}
+
+
+                                    <tr>
+
+
+                                        <td>
+
+                                            <span class="student-id">
+                                                {{ student.student_id }}
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <span class="student-name">
+                                                {{ student.name }}
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <span class="student-email">
+                                                {{ student.email }}
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <form
+                                                method="POST"
+                                                class="remove-form"
+                                                action="{{ url_for(
+                                                    'courses.remove_student',
+                                                    course_id=course.id,
+                                                    student_id=student.id
+                                                ) }}"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="remove-btn"
+                                                    onclick="return confirm(
+                                                        'Remove this student from the course?'
+                                                    );"
+                                                >
+                                                    Remove
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+
+                                    </tr>
+
+
+                                {% endfor %}
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            👥
+                        </div>
+
+                        <h3>
+                            No Students Enrolled
+                        </h3>
+
+                        <p>
+                            Import students from this course's
+                            batch or add an individual student.
+                        </p>
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 AVAILABLE STUDENTS
+                 ============================================= -->
+
+            <div class="card">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Add Students
+                        </h2>
+
+                        <p>
+                            Students available from the course's batch.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if course.batch %}
+
+
+                    <div class="import-info">
+
+                        <strong>
+                            Batch database:
+                        </strong>
+
+                        {{ course.batch.name }}
+
+                        {% if course.batch.academic_session %}
+
+                            — {{ course.batch.academic_session }}
+
+                        {% endif %}
+
+                        <br><br>
+
+                        Only students belonging to
+                        <strong>
+                            {{ course.batch.name }}
+                        </strong>
+                        can be enrolled in this course.
+
+                    </div>
+
+
+                    {% if available_students %}
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'courses.enroll_batch',
+                                course_id=course.id
+                            ) }}"
+                        >
+
+
+                            <div class="available-list">
+
+
+                                {% for student in available_students %}
+
+
+                                    <label class="available-row">
+
+
+                                        <input
+                                            type="checkbox"
+                                            name="student_ids"
+                                            value="{{ student.id }}"
+                                        >
+
+
+                                        <div class="available-details">
+
+                                            <div class="available-id">
+                                                {{ student.student_id }}
+                                            </div>
+
+                                            <div class="available-name">
+                                                {{ student.name }}
+                                            </div>
+
+                                            <div class="available-email">
+                                                {{ student.email }}
+                                            </div>
+
+                                        </div>
+
+
+                                    </label>
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+                            <div class="import-actions">
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-green"
+                                >
+                                    Import Selected Students
+                                </button>
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    name="import_all"
+                                    value="1"
+                                    onclick="
+                                        document
+                                        .querySelectorAll(
+                                            'input[name=student_ids]'
+                                        )
+                                        .forEach(
+                                            checkbox =>
+                                            checkbox.checked = false
+                                        );
+                                    "
+                                >
+                                    Import All Batch Students
+                                </button>
+
+
+                            </div>
+
+
+                        </form>
+
+
+                    {% else %}
+
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                ✓
+                            </div>
+
+                            <h3>
+                                All Batch Students Are Enrolled
+                            </h3>
+
+                            <p>
+                                There are no remaining students
+                                in this batch database to add.
+                            </p>
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                {% else %}
+
+
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            ⚠
+                        </div>
+
+                        <h3>
+                            No Batch Assigned
+                        </h3>
+
+                        <p>
+                            This course needs a batch before
+                            students can be imported.
+                        </p>
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 ADD INDIVIDUAL STUDENT
+                 ============================================= -->
+
+            <div class="card">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Add Individual Student
+                        </h2>
+
+                        <p>
+                            Create a new student in this batch
+                            or enroll an existing student.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for(
+                            'students.add_student',
+                            course_id=course.id
+                        ) }}"
+                        class="btn btn-primary"
+                    >
+                        + Add Student
+                    </a>
+
+                </div>
+
+
+                <div class="import-info">
+
+                    The student will automatically belong to:
+
+                    <strong>
+
+                        {% if course.batch %}
+
+                            {{ course.batch.name }}
+
+                        {% else %}
+
+                            this course's batch
+
+                        {% endif %}
+
+                    </strong>.
+
+                    The batch cannot be selected manually here.
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             RIGHT COLUMN
+             ================================================= -->
+
+        <div>
+
+
+            <!-- =============================================
+                 COURSE INFORMATION
+                 ============================================= -->
+
+            <div class="card">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Course Information
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="meta-box">
+
+                    <span class="meta-label">
+                        Course Code
+                    </span>
+
+                    <span class="meta-value">
+                        {{ course.course_code }}
+                    </span>
+
+                </div>
+
+
+                <br>
+
+
+                <div class="meta-box">
+
+                    <span class="meta-label">
+                        Course Name
+                    </span>
+
+                    <span class="meta-value">
+                        {{ course.course_name }}
+                    </span>
+
+                </div>
+
+
+                <br>
+
+
+                <div class="meta-box">
+
+                    <span class="meta-label">
+                        Batch
+                    </span>
+
+                    <span class="meta-value">
+
+                        {% if course.batch %}
+
+                            {{ course.batch.name }}
+
+                        {% else %}
+
+                            Not assigned
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <br>
+
+
+                <div class="meta-box">
+
+                    <span class="meta-label">
+                        Academic Session
+                    </span>
+
+                    <span class="meta-value">
+
+                        {% if course.batch and course.batch.academic_session %}
+
+                            {{ course.batch.academic_session }}
+
+                        {% elif course.academic_session %}
+
+                            {{ course.academic_session }}
+
+                        {% else %}
+
+                            Not assigned
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <br>
+
+
+                <a
+                    href="{{ url_for(
+                        'courses.edit_course',
+                        course_id=course.id
+                    ) }}"
+                    class="btn btn-edit"
+                    style="width:100%;"
+                >
+                    ✏ Edit Course
+                </a>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 COURSE RULE
+                 ============================================= -->
+
+            <div class="card">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Enrollment Rule
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="import-info">
+
+                    This course belongs to exactly one batch.
+
+                    <br><br>
+
+                    Students from other batches cannot be
+                    enrolled in this course.
+
+                    <br><br>
+
+                    If the same course is taught to another
+                    batch, create another course offering.
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 DANGER ZONE
+                 ============================================= -->
+
+            <div class="card danger-zone">
+
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Delete Course
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+
+                    Deleting this course will also delete its
+                    enrollments and attendance sessions.
+
+                    This action cannot be undone.
+
+                </p>
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'courses.delete_course',
+                        course_id=course.id
+                    ) }}"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm(
+                            'Are you sure you want to permanently delete this course and its attendance data?'
+                        );"
+                    >
+                        Delete Course
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

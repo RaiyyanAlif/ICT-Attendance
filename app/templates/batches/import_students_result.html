@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Import Result - ICT Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .box {
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .box strong {
+            display: block;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .imported {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .skipped {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <h1>
+            Import Complete
+        </h1>
+
+        <p>
+            Existing students have been assigned to
+            <strong>{{ batch.name }}</strong>.
+        </p>
+
+
+        <div class="summary">
+
+            <div class="box imported">
+
+                <strong>
+                    {{ imported_count }}
+                </strong>
+
+                Imported
+
+            </div>
+
+
+            <div class="box skipped">
+
+                <strong>
+                    {{ skipped_count }}
+                </strong>
+
+                Skipped
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a
+                class="btn primary"
+                href="{{ url_for(
+                    'batches.batch_students',
+                    batch_id=batch.id
+                ) }}"
+            >
+                View Batch Students
+            </a>
+
+            <a
+                class="btn secondary"
+                href="{{ url_for(
+                    'batches.list_batches'
+                ) }}"
+            >
+                Back to Batches
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

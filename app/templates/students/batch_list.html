@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ batch.name }} Students | ICT Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 35px 20px 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 18px;
+            padding: 27px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            margin-bottom: 22px;
+        }
+
+        .header-card h1 {
+            margin: 0 0 8px;
+            font-size: 29px;
+        }
+
+        .header-card p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-weight: 700;
+        }
+
+        .actions {
+            margin-top: 22px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 9px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-edit {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1d4ed8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .student-id {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <!-- TOP BAR -->
+
+    <div class="topbar">
+
+        <a
+            href="{{ url_for('batches.list_batches') }}"
+            class="back-link"
+        >
+            ← Back to Batches
+        </a>
+
+    </div>
+
+
+    <!-- BATCH HEADER -->
+
+    <div class="header-card">
+
+        <h1>
+            {{ batch.name }}
+        </h1>
+
+        <p>
+            Student master database for this batch.
+        </p>
+
+
+        <div class="info-row">
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Department
+                </span>
+
+                <span class="info-value">
+                    {{ batch.department or "N/A" }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Students
+                </span>
+
+                <span class="info-value">
+                    {{ students|length }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    Status
+                </span>
+
+                <span class="info-value">
+
+                    {% if batch.is_active %}
+                        Active
+                    {% else %}
+                        Archived
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a
+                href="{{ url_for(
+                    'students.add_student',
+                    batch_id=batch.id
+                ) }}"
+                class="btn btn-primary"
+            >
+                + Add Student
+            </a>
+
+
+            <a
+                href="{{ url_for('students.list_students') }}"
+                class="btn btn-secondary"
+            >
+                All Students
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- STUDENT TABLE -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Students
+            </h2>
+
+            <span>
+                Sorted by Student ID
+            </span>
+
+        </div>
+
+
+        {% if students %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Student ID
+                            </th>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+
+                                <td class="student-id">
+                                    {{ student.student_id }}
+                                </td>
+
+
+                                <td>
+                                    {{ student.name }}
+                                </td>
+
+
+                                <td>
+                                    {{ student.email }}
+                                </td>
+
+
+                                <td>
+
+                                    <a
+                                        href="{{ url_for(
+                                            'students.edit_student',
+                                            student_id=student.id
+                                        ) }}"
+                                        class="btn btn-edit"
+                                    >
+                                        Edit Student
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <p>
+                    No students have been added to this batch yet.
+                </p>
+
+                <a
+                    href="{{ url_for(
+                        'students.add_student',
+                        batch_id=batch.id
+                    ) }}"
+                    class="btn btn-primary"
+                >
+                    + Add First Student
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

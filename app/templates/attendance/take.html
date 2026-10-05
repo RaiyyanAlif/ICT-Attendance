@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Take Attendance - ICT Attendance
+    </title>
+
+</head>
+
+<body>
+
+<h1>ICT Attendance</h1>
+
+<h2>
+    {{ course.course_code }}
+</h2>
+
+<h3>
+    {{ course.course_name }}
+</h3>
+
+<hr>
+
+{% if error %}
+
+<p style="color: red;">
+    {{ error }}
+</p>
+
+{% endif %}
+
+<form method="POST">
+
+    <label>
+        Attendance Date:
+    </label>
+
+    <input
+        type="date"
+        name="attendance_date"
+        value="{{ request.form.get('attendance_date', '') }}"
+        required
+    >
+
+    <br><br>
+
+    <label>
+        Attendance Weight:
+    </label>
+
+    <select name="weight" required>
+
+        <option value="1">1 Attendance</option>
+        <option value="2">2 Attendances</option>
+        <option value="3">3 Attendances</option>
+        <option value="4">4 Attendances</option>
+        <option value="5">5 Attendances</option>
+
+    </select>
+
+    <br><br>
+
+    <button
+        type="button"
+        onclick="markAllPresent()"
+    >
+        ✓ Mark All Present
+    </button>
+
+    <button
+        type="button"
+        onclick="markAllAbsent()"
+    >
+        ✕ Mark All Absent
+    </button>
+
+    <hr>
+
+    <table
+        border="1"
+        cellpadding="10"
+        cellspacing="0"
+    >
+
+        <thead>
+
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Batch</th>
+                <th>Attendance</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for enrollment in enrollments %}
+
+            {% set student = enrollment.student %}
+
+            <tr>
+
+                <td>
+                    {{ student.student_id }}
+                </td>
+
+                <td>
+                    {{ student.name }}
+                </td>
+
+                <td>
+                    {{ student.batch.name }}
+                </td>
+
+                <td>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="student_{{ student.id }}"
+                            value="present"
+                            required
+                        >
+                        Present
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="student_{{ student.id }}"
+                            value="absent"
+                        >
+                        Absent
+                    </label>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <button type="submit">
+        SAVE ATTENDANCE
+    </button>
+
+</form>
+
+<br>
+
+<a href="{{ url_for(
+    'courses.course_details',
+    course_id=course.id
+) }}">
+    ← Back to Course
+</a>
+
+<script>
+
+function markAllPresent() {
+
+    document
+        .querySelectorAll(
+            'input[value="present"]'
+        )
+        .forEach(
+            radio => radio.checked = true
+        );
+}
+
+
+function markAllAbsent() {
+
+    document
+        .querySelectorAll(
+            'input[value="absent"]'
+        )
+        .forEach(
+            radio => radio.checked = true
+        );
+}
+
+</script>
+
+</body>
+
+</html>

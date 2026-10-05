@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Batch - ICT Attendance</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: -14px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+        <a
+            class="back"
+            href="{{ url_for('batches.list_batches') }}"
+        >
+            ← Back to Batches
+        </a>
+    </div>
+
+    <div class="card">
+
+        <h1>Add New Batch</h1>
+
+        <div class="subtitle">
+            Create a batch and assign its academic session.
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form
+            method="POST"
+            action="{{ url_for('batches.add_batch') }}"
+        >
+
+            <label for="name">
+                Batch Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Example: ICT-24"
+                required
+            >
+
+            <label for="department">
+                Department
+            </label>
+
+            <input
+                type="text"
+                id="department"
+                name="department"
+                placeholder="Example: ICT"
+            >
+
+            <label for="academic_session">
+                Academic Session
+            </label>
+
+            <input
+                type="text"
+                id="academic_session"
+                name="academic_session"
+                placeholder="Example: 2026-2027"
+                required
+            >
+
+            <div class="hint">
+                Enter the academic session manually.
+                The system does not automatically assume the current year.
+            </div>
+
+            <button type="submit">
+                Add Batch
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
